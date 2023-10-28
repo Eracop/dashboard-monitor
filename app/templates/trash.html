@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+     <span style="color: green;">[{{ message }}]</span>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <style>
+        table.form_submit, table.form_submit td, table.form_submit th {
+            border: 1px solid black;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        table.form_submit {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table.form_submit textarea {
+            width: 95%;
+        }
+    </style>
+
+    <table>
+        <tr valign="center">
+            <td><img src="{{ user.avatar(128) }}"></td>
+            <td style="padding-left:15px">
+                <h1>User: {{ user.username }}</h1>
+                {{ moment.include_moment() }}
+                {% if user.email %}<p>{{ user.email }}</p>{% endif %}
+<!--                {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}-->
+                {% if user.last_seen %}<p>Last seen on: {{ moment(user.last_seen).format('LLL') }}</p>{% endif %}
+                {% if user == current_user %}
+                <p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
+                {% endif %}
+
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <form method="POST" action="">
+        <table class="form_submit">
+          <colgroup>
+           <col span="1" style="width: 20%;">
+           <col span="1" style="width: 20%;">
+           <col span="1" style="width: 50%;">
+           <col span="1" style="width: 10%;">
+          </colgroup>
+          <tr>
+            <th>Value</th>
+            <th>Time</th>
+            <th>Comment</th>
+            <th></th>
+          </tr>
+          <tr>
+            <td><label for="value1">Temp 1:</label>
+                <input type="number" id="value1" name="Temp1"></td>
+            <td><label for="value3">Time 1:</label>
+                <input type="number" id="value3" name="Time1"></td>
+            <td rowspan="2"><textarea id="comment" name="comment"></textarea></td>
+            <td rowspan="2"><button type="submit"> Submit</button></td>
+          </tr>
+          <tr>
+            <td><label for="value2">Temp 2:</label>
+                <input type="number" id="value2" name="Temp2"></td>
+            <td><label for="value4">Time 2:</label>
+                <input type="number" id="value4" name="Time2"></td>
+          </tr>
+        </table>
+    </form>
+<!--    {% for post in posts %}-->
+<!--        {% include '_post.html' %}-->
+<!--    {% endfor %}-->
+{% endblock %}

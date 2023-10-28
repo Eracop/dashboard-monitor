@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Form</title>
+  <style>
+    .avatar {
+      max-width: 100px;
+      height: auto;
+    }
+
+    .container-fluid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      grid-gap: 20px;
+    }
+
+    .custom-card {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .custom-card-image {
+      flex: 0 0 auto;
+      margin-right: 20px;
+    }
+
+    .custom-card-body {
+      flex: 1 1 auto;
+    }
+
+    .custom-table {
+      width: 100%;
+    }
+
+    .custom-table td,
+    .custom-table th {
+      white-space: nowrap;
+    }
+
+    .form-footer {
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .header-links {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between; /* Để căn giữa và giữa */
+      align-items: center;
+    }
+
+    .header-links a {
+      margin-right: 10px; /* Để tạo khoảng cách giữa các liên kết */
+    }
+
+    .header-user {
+      flex: 1; /* Để phần text chứa "Hello, Anh Tuấn" định kích thước và thay đổi vị trí */
+      text-align: left; /* Để căn trái vị trí của "Hello, Anh Tuấn" */
+    }
+  </style>
+</head>
+<body>
+  <div class="header-links">
+    <div class="header-user">
+      <p>Hello, Anh Tuấn</p>
+    </div>
+    <a href="#" class="text-white">Home</a> | <a href="#" class="text-white">Log Out</a>
+  </div>
+
+  <!-- Bảng chứa cả hai hàng -->
+  <table class="table table-bordered custom-table">
+    <tbody>
+      <tr>
+        <td>
+          <div class="container-fluid">
+            <div class="custom-card">
+              <div class="custom-card-body">
+                <div class="custom-card-image">
+          <h2>Instruction</h2>
+          <p>Sintering machine operation process: </p>
+          <p>- Start the machine</p>
+          <p>- Enter the parameters about time, temperature, and force of each period.</p>
+          <p>- After send the information, the machine will perform the process according to this parameters.</p>
+          <p>- Notification is sent when completing each period or finishing work.</p>
+          <p>- Can stop operation during the process.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <h2>Parameter</h2>
+          <div class="card">
+            <div class="card-body">
+              <table class="table table-bordered custom-table">
+                <thead>
+                  <tr>
+                    <th>Sample (No.)</th>
+                    <th>Temperature (℃)</th>
+                    <th>Duration (mins)</th>
+                    <th>Pressure (MPa)</th>
+                    <th>Area (cm²)</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="2"><input type="text" class="form-control" name="sample1"></td>
+                    <td><input type="text" class="form-control" name="temp1"></td>
+                    <td><input type="text" class="form-control" name="time1"></td>
+                    <td><input type="text" class="form-control" name="pressure1"></td>
+                    <td><input type="text" class="form-control" name="area1"></td>
+                    <td><input type="text" class="form-control" name="comment1"></td>
+                  </tr>
+                  <tr>
+                    <td><input type="text" class="form-control" name="temp2"></td>
+                    <td><input type="text" class="form-control" name="time2"></td>
+                    <td></td>
+                    <td></td>
+                    <td><input type="text" class="form-control" name="comment2"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="form-footer">
+              <button class="btn btn-primary submit-button">Submit</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+                <img src="chart.jpg" alt="Mô tả ảnh" style="width: 1000px; height: 500px;">
+        </td>
+        <td>
+          <h2>History</h2>
+          <table class="table table-bordered custom-table">
+            <thead>
+              <tr>
+                <th>Sample (No.)</th>
+                <th>Temperature (℃)</th>
+                <th>Duration (mins)</th>
+                <th>Pressure (MPa)</th>
+                <th>Area (cm²)</th>
+                <th>Comment</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="2">1</td>
+                <td>100</td>
+                <td>20</td>
+                <td>100</td>
+                <td>22</td>
+                <td>Good</td>
+              </tr>
+              <tr>
+                <td>85</td>
+                <td>40</td>
+                <td></td>
+                <td></td>
+                <td>Oke</td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Thêm thẻ canvas để vẽ biểu đồ ở đây -->
+  <canvas id="myChart" width="1000px" height="30px"></canvas>
+</body>
+</html>
+<canvas id="myChart" width="400" height="200"></canvas>
+
+<canvas id="myChart" width="800" height="400"></canvas>
+
+
+

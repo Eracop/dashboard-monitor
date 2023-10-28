@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="{{ url_for('static', filename='css/loginstyle.css') }}" rel="stylesheet">
+    </head>
+    <body>
+        <div id="id01" class="modal">
+            <form action="" class="modal-content animate" method="post" novalidate >
+                {{ form.hidden_tag() }}
+                <div class="imgcontainer">
+                    <img src="{{ url_for('static', filename='images/UPDATE.png') }}" alt="Avatar" class="avatar">
+                </div>
+                <div class="container">
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div>
+                        {% for message in messages %}
+                        <span style="color: red;">[{{ message }}]</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    <label for="uname"><b>Username</b></label>
+                    {{ form.username(size=32, class="form-control", placeholder="Enter new Username", required="required") }}
+                    </br>
+                    {% for error in form.username.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                    </br>
+                    <label for="eml"><b>Email</b></label>
+                    {{ form.email(size=32, class="form-control", placeholder="Enter new Email", required="required") }}
+                    </br>
+                    {% for error in form.email.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                    <button type="submit">Update</button>
+                </div>
+                <div class="container" style="background-color:#f1f1f1; height: 30px; padding-top:5px;">
+                    <span class="psw">Back to <a href="{{ url_for('user', username=current_user.username) }}" style="color:#2C96DC;">Home</a></span>
+                </div>
+            </form>
+        </div>
+    </body>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+    <style>
+        table.form_submit, table.form_submit td, table.form_submit th {
+            border: 1px solid black;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        table.form_submit {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table.form_submit textarea {
+            width: 95%;
+        }
+    </style>
+    <span>Notification: </span>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+     <span style="color: green; ">[{{ message }}]</span>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <hr>
+    <table>
+        <tr valign="center">
+            <td><img src="{{ user.avatar(128) }}"></td>
+            <td style="padding-left:15px">
+                <h1>User: {{ user.username }}</h1>
+                {{ moment.include_moment() }}
+                {% if user.email %}<p>{{ user.email }}</p>{% endif %}
+<!--                {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}-->
+                {% if user.last_seen %}<p>Last seen on: {{ moment(user.last_seen).format('LLL') }}</p>{% endif %}
+                {% if user == current_user %}
+                <p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
+                {% endif %}
+
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <h2>Form</h2>
+    <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <table class="form_submit">
+        <colgroup>
+            <col span="1" style="width: 20%;">
+            <col span="1" style="width: 20%;">
+            <col span="1" style="width: 50%;">
+            <col span="1" style="width: 10%;">
+        </colgroup>
+        <tr>
+            <th>Temperature</th>
+            <th>Duration</th>
+            <th>Comment</th>
+            <th></th>
+        </tr>
+        <tr>
+            <td><label>Temp 1:</label>
+                {{ form.temp1(size=32, class="form-control", placeholder="Enter First Temperature", required="required") }}</td>
+            <td><label>Time 1:</label>
+                {{ form.time1(size=32, class="form-control", placeholder="Enter First Duration", required="required") }}</td>
+            <td rowspan="2">{{ form.comment(style="width:95%; height: 100%;", placeholder="Type note here") }}</td>
+            <td rowspan="2"><button type="submit">Submit</button></td>
+        </tr>
+        <tr>
+            <td><label>Temp 2:</label>
+                {{ form.temp2(size=32, class="form-control", placeholder="Enter Second Temperature", required="required") }}</td>
+            <td><label>Time 2:</label>
+                {{ form.time2(size=32, class="form-control", placeholder="Enter Second Duration", required="required") }}</td>
+        </tr>
+    </table>
+    {% for error in form.temp1.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+    {% for error in form.temp2.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+    {% for error in form.time1.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+    {% for error in form.time2.errors %}
+    <span style="color: red;">[{{ error }}]</span>
+    {% endfor %}
+    </form>
+    </br>
+    <hr>
+    <h2>History</h2>
+    {% for post in posts %}
+        {% include '_post.html' %}
+    {% endfor %}
+
+
+<!--    {% for post in posts %}-->
+<!--        {% include '_post.html' %}-->
+<!--    {% endfor %}-->
+{% endblock %}
