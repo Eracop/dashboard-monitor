@@ -20,7 +20,16 @@ currentuser = None
 @app.route('/index')
 @login_required
 def index():
-    user = {'username': 'Bao'}
+    global currentuser
+    user = {
+        'username': 'Anonymous'
+    }
+    if currentuser is None:  # Use 'is' for comparison
+        user = {
+            'username': 'Anonymous'
+        }
+    else:
+        user = User.query.filter_by(username=current_user.username).first_or_404()  
     posts = [
         {
             'author': {'username': 'Quynh'},
@@ -31,7 +40,7 @@ def index():
             'body': 'The Avengers assemble!'
         }
     ]
-    return render_template("index.html", title='Home Page', posts=posts)
+    return render_template("index.html", title='Home Page', posts=posts, user=user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -46,7 +55,7 @@ def login():
             return redirect(url_for('login'))
         currentuser = form.username.data
         login_user(user, remember=form.remember_me.data)
-        next_page = url_for('user', username=current_user.username)
+        next_page = url_for('index')
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 

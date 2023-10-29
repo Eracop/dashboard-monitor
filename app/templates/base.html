@@ -1,23 +1,59 @@
 <!doctype html>
 <html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <head>
         {% if title %}
         <title>{{ title }} - microblog</title>
         {% else %}
-        <title>HỆ THỐNG THIÊU KẾT KIM LOẠI AG DẠNG BỘT CHO MẪU THỬ MICRO</title>
         {% endif %}
     </head>
+    <style>
+    .header-links {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-links a {
+    margin-right: 10px;
+    text-decoration: none; /* Remove underlines from links */
+    color: #fff; /* Set link color to white */
+    font-weight: bold; /* Make the text bold */
+    }
+    .header-user {
+      text-align: left;
+    }
+    a:hover {
+    color: #f0f0f0; /* Change link color on hover */
+    }
+    h1 {
+      text-align: center;
+    }
+    </style>
     <body>
-        <div>
-            HỆ THỐNG THIÊU KẾT KIM LOẠI AG DẠNG BỘT CHO MẪU THỬ MICRO
+        <div class="header-links">
+            <div class="header-user">
+                <p>Hello, <a href="{{ url_for('user', username=current_user.username) }}">{{ current_user.username }}</a></p>
+            </div>
+            {% if title %}
+            <h1>{{ title }} - microblog</h1>
+            {% else %}
+            <h1>METAL SYNTERING SYSTEM FOR AG POWDER IN MICRO SAMPLES</h1>
+            {% endif %}
             {% if not current_user.is_anonymous %}
-            <a href="{{ url_for('user', username=current_user.username) }}">Home</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <div>
+                
+                <a href="{{ url_for('index')}}">Home</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
             {% endif %}
         </div>
-        <hr>
-
         {% block content %}{% endblock %}
-
     </body>
 </html>
