@@ -21,13 +21,8 @@ currentuser = None
 @login_required
 def index():
     global currentuser
-    user = {
-        'username': 'Anonymous'
-    }
     if currentuser is None:  # Use 'is' for comparison
-        user = {
-            'username': 'Anonymous'
-        }
+        return redirect(url_for('login'))
     else:
         user = User.query.filter_by(username=current_user.username).first_or_404()  
     posts = [
@@ -40,7 +35,7 @@ def index():
             'body': 'The Avengers assemble!'
         }
     ]
-    return render_template("index.html", title='Home Page', posts=posts, user=user)
+    return render_template("index.html", title='METAL SYNTERING SYSTEM FOR AG POWDER IN MICRO SAMPLES', posts=posts, user=user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
