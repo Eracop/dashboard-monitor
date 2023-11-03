@@ -6,7 +6,7 @@
         <link href="{{ url_for('static', filename='css/loginstyle.css') }}" rel="stylesheet">
     </head>
     <body>
-        <div id="id01" class="modal">
+        <div id="id01" class="modal1">
             <form action="" class="modal-content animate" method="post" novalidate >
                 {{ form.hidden_tag() }}
                 <div class="imgcontainer">
@@ -37,7 +37,7 @@
                     {% endfor %}
                     <button type="submit"> Login</button>
                 </div>
-                <div class="container" style="background-color:#f1f1f1; height: 30px; padding-top:5px;">
+                <div class="" style="background-color:#f1f1f1; padding: 0 5px">
                     <span class="psw">Click to <a href="{{ url_for('register') }}" style="color:#2C96DC;">Register!</a></span>
                 </div>
             </form>

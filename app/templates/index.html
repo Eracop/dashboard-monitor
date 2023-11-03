@@ -89,7 +89,7 @@
           </p>
           <p>- You can stop operation during the process.</p>
         </div>
-        <button class="btn btn-outline-success">
+        <button class="btn btn-outline-success" id="#historyButton">
             HISTORY
         </button>
   </div>
@@ -110,6 +110,7 @@
           </thead>
           <tbody>
             <tr>
+              <form id="sinteringForm">
               <td rowspan="2">
                 <input type="text" class="form-control" name="sample1" />
               </td>
@@ -123,7 +124,7 @@
                 <input type="text" class="form-control" name="comment1" />
               </td>
             </tr>
-            <tr>
+            <form>
               <td><input type="text" class="form-control" name="temp2" /></td>
               <td><input type="text" class="form-control" name="time2" /></td>
               <td></td>
@@ -131,6 +132,7 @@
               <td>
                 <input type="text" class="form-control" name="comment2" />
               </td>
+              </form>
             </tr>
           </tbody>
         </table>
@@ -176,4 +178,62 @@
     </div>
   </div>
 </div>
+<!-- <script type="module" src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
+<script type="module" src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
+<link href="{{ url_for('static', filename='javascript/firebase-config.js') }}" rel="stylesheet"> -->
+<script type="module">
+
+  // Initialize Firebase
+  // Function to submit data to Firebase
+  function submitData() {
+    var form = document.getElementById("sinteringForm");
+
+    // Create a data object from the form inputs
+    var data = {
+      sample: form.sample1.value,
+      temperature: form.temp1.value,
+      duration: form.time1.value,
+      pressure: form.pressure1.value,
+      area: form.area1.value,
+      comment: form.comment1.value,
+    };
+    console.log(data,"ok")
+    // Get a reference to the Firebase Realtime Database
+    fetch('/api/sinteringForm', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then(response => response.json())
+    .then(result => {
+      console.log(result);
+      // Optionally, you can clear the form fields here
+      form.reset();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+
+    // Optionally, you can clear the form fields here
+    form.reset();
+  }
+
+  // Function to retrieve history from Firebase
+  function retrieveHistory() {
+    var userId = 'user_id'; // Replace with the actual user's ID
+    var historyRef = app.database().ref('users/' + userId + '/history');
+
+    historyRef.on('value', function (snapshot) {
+      // Handle the retrieved data here
+      var historyData = snapshot.val();
+      console.log(historyData); // You can display or process the data as needed
+    });
+  }
+
+  // Attach event listeners to the buttons
+  document.querySelector(".submit-button").addEventListener("click", submitData);
+  document.querySelector("#historyButton").addEventListener("click", retrieveHistory);
+</script>
 {% endblock %}

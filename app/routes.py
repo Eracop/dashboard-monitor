@@ -13,29 +13,29 @@ from app.forms import RegistrationForm
 from datetime import datetime
 from app.forms import EditProfileForm
 from flask import Flask, request, jsonify
-
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+import os
 currentuser = None
+if not firebase_admin._apps:
+    current_directory = os.path.dirname(os.path.realpath(__file__))
+    service_account_path = os.path.join(current_directory, 'serviceAccount.json')
+    cred = credentials.Certificate(service_account_path)
+    firebase_admin.initialize_app(cred)
+    firebaseDb = firestore.client()
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    global currentuser
+    user = {'username': 'Bao', "email": "test@email.com"}
     if currentuser is None:  # Use 'is' for comparison
-        return redirect(url_for('login'))
+        return render_template("index.html", title='METAL SYNTERING SYSTEM FOR AG POWDER IN MICRO SAMPLES', user=user)
     else:
         user = User.query.filter_by(username=current_user.username).first_or_404()  
-    posts = [
-        {
-            'author': {'username': 'Quynh'},
-            'body': 'Bao is good!'
-        },
-        {
-            'author': {'username': 'Van'},
-            'body': 'The Avengers assemble!'
-        }
-    ]
-    return render_template("index.html", title='METAL SYNTERING SYSTEM FOR AG POWDER IN MICRO SAMPLES', posts=posts, user=user)
+ 
+    return render_template("index.html", title='METAL SYNTERING SYSTEM FOR AG POWDER IN MICRO SAMPLES', user=user)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -119,3 +119,16 @@ def edit_profile():
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+@app.route('/api/sinteringForm', methods=['POST'])
+def submit():
+    data = request.json  # Assumes data is sent in JSON format
+    user_id = data.get('user_id')  # You may want to identify the user
+    history_data = data.get('data')  # Data to be stored in Firebase
+
+
+    print("history",data)
+    history_ref = firebaseDb.collection('history')
+    new_history_doc = history_ref.add(data)
+
+    return jsonify({"message": "Data submitted successfully"})
