@@ -22,7 +22,7 @@ import os
 from io import BytesIO
 import base64
 from flask import send_file
-
+from firebase_admin import db as realtimeDB
 
 def generate_plot(temperature1, temperature2, duration1, duration2, pressure):
     # Define the limit of parameters
@@ -105,12 +105,19 @@ def generate_plot(temperature1, temperature2, duration1, duration2, pressure):
 
 
 currentuser = None
+app2 = None
 if not firebase_admin._apps:
     current_directory = os.path.dirname(os.path.realpath(__file__))
     service_account_path = os.path.join(current_directory, 'serviceAccount.json')
     cred = credentials.Certificate(service_account_path)
     firebase_admin.initialize_app(cred)
     firebaseDb = firestore.client()
+    realtimeDb = os.path.join(current_directory, 'realTimeParam.json')
+    realtimeDbCred = credentials.Certificate(realtimeDb)
+    app2 = firebase_admin.initialize_app(realtimeDbCred, {
+    'databaseURL': 'https://esp8266demo1-e43a5-default-rtdb.asia-southeast1.firebasedatabase.app'
+    }, name='second_admin_instance')
+    realtimeDatabase = realtimeDB.reference('restricted_access  /secret_document',app2)
 
 @app.route('/')
 @app.route('/index')
@@ -223,7 +230,8 @@ def submit():
     new_record = user_collection.collection(time_submit).document()
     new_record.set(history_data, merge=True) 
 
-
+    ref = realtimeDB.reference('/input', app2)
+    ref.update(history_data)
     return jsonify({"message": "Data submitted successfully"})
 
 @app.route('/api/history/<user_id>', methods=['GET'])
@@ -257,3 +265,17 @@ def generate_plot_api():
 
     # Return the plot image as a response
     return send_file(BytesIO(base64.b64decode(plot_image)), mimetype='image/png')
+
+@app.route('/api/real-time-param', methods=['GET'])
+def fetch_data():
+    try:
+        # Reference the specific location in your Firebase Realtime Database
+        ref = realtimeDB.reference('/output', app2)
+        print(ref.get())
+        # Fetch the data from the reference
+        data = ref.get()
+
+        # Return the data as JSON
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)})

@@ -151,7 +151,7 @@
             </tr>
         </thead>
         </table>
-        <table class="table table-striped table-bordered table-hover custom-table table-dark">
+        <table class="table table-striped table-bordered table-hover custom-table table-dark" id="realTimeParam">
            <thead >
               <tr>
                 <th>Force</th>
@@ -161,17 +161,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>225</td>
-                <td>30</td>
-                <td>750</td>
-                <td>750</td>
+              <tr id="realTimeParam-row">
+               
               </tr>
             </tbody>
           </table>
-        <div class="form-footer">
-          <button class="btn btn-primary submit-button">Submit</button>
-        </div>
       </div>
     </div>
   </div>
@@ -209,108 +203,142 @@
       </div>
     </div>
   </div>
-</div>
-<!-- <script type="module" src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
-<script type="module" src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
-<link href="{{ url_for('static', filename='javascript/firebase-config.js') }}" rel="stylesheet"> -->
-<script type="module">
-
-
+  <script type = "module" >
+  
+  const table = document.getElementById("realtimeParam");
+  
+  function fetchRealTimeParam() {
+      // Make a GET request to your API endpoint
+      fetch('/api/real-time-param')
+          .then(response => response.json())
+          .then(data => {
+              console.log(data)
+              const table = document.getElementById("realTimeParam");
+              const existingRow = document.getElementById("realTimeParam-row");
+  
+              // If an existing row exists, remove it
+              if (existingRow) {
+                  table.deleteRow(existingRow.rowIndex);
+              }
+  
+              // Create a new row and cells
+              const row = table.insertRow();
+              row.id = "realTimeParam-row"; // Set an ID for the new row for replacement
+  
+              // Insert data into the row's cells
+              const forceCell = row.insertCell(0);
+              const tempCell = row.insertCell(1);
+              const periodCell = row.insertCell(2);
+              const timeLeftCell = row.insertCell(3);
+  
+              forceCell.textContent = data.force;
+              tempCell.textContent = data.temp;
+              periodCell.textContent = data.period;
+              timeLeftCell.textContent = data.timeLeft;
+          })
+          .catch(error => {
+              console.error('Error fetching data:', error);
+          });
+  }
+  
+  // Call the fetchData function every 1 minute (60,000 milliseconds)
+  setInterval(fetchRealTimeParam, 3600000);
+  fetchRealTimeParam();
+  // Initial data fetch
   // Initialize Firebase
   // Function to submit data to Firebase
   function submitData() {
-    var form = document.getElementById("sinteringForm");
-
-    // Create a data object from the form inputs
-    const formData = {
-      sample1: form.sample1.value,
-      temp1: form.temp1.value,
-      duration1: form.duration1.value,
-      pressure1: form.pressure1.value,
-      area1: form.area1.value,
-      comment1: form.comment1.value,
-      temp2: form.temp2.value,
-      duration2: form.duration2.value,
-      comment2: form.comment2.value,
-      time_submit: new Date().toISOString(),
-
-    };
-    const data = {
-      data: formData,
-      user_id: form.username.value,
-      time_submit: new Date().toISOString(),
-    }
-    // Get a reference to the Firebase Realtime Database
-    fetch('/api/sinteringForm', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  })
-    .then(response => response.json())
-    .then(result => {
-      console.log(result);
-      // Optionally, you can clear the form fields here
-      form.reset();
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
-
-
-    fetch(`/generate_plot?temperature1=${formData.temp1}&temperature2=${formData.temp2}&duration1=${formData.duration1}&duration2=${formData.duration2}&pressure=${formData.pressure1}`)
-                .then(response => response.blob())
-                .then(blob => {
-                    const plotImageUrl = URL.createObjectURL(blob);
-                    const plotImageElement = document.createElement('img');
-                    plotImageElement.src = plotImageUrl;
-                    document.getElementById('plotImageContainer').innerHTML = '';
-                    document.getElementById('plotImageContainer').appendChild(plotImageElement);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+      var form = document.getElementById("sinteringForm");
+  
+      // Create a data object from the form inputs
+      const formData = {
+        sample1: parseFloat(form.sample1.value),
+        temp1: parseFloat(form.temp1.value),
+        duration1: parseFloat(form.duration1.value),
+        pressure1: parseFloat(form.pressure1.value),
+        area1: parseFloat(form.area1.value),
+        comment1: parseFloat(form.comment1.value),
+        temp2: parseFloat(form.temp2.value),
+        duration2: parseFloat(form.duration2.value),
+        comment2: parseFloat(form.comment2.value),
+        time_submit: new Date().toISOString(),
+      };
+      const data = {
+          data: formData,
+          user_id: form.username.value,
+          time_submit: new Date().toISOString(),
+      }
+      // Get a reference to the Firebase Realtime Database
+      fetch('/api/sinteringForm', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+          })
+          .then(response => response.json())
+          .then(result => {
+              console.log(result);
+              // Optionally, you can clear the form fields here
+              form.reset();
+          })
+          .catch(error => {
+              console.error('Error:', error);
+          });
+  
+  
+      fetch(`/generate_plot?temperature1=${formData.temp1}&temperature2=${formData.temp2}&duration1=${formData.duration1}&duration2=${formData.duration2}&pressure=${formData.pressure1}`)
+          .then(response => response.blob())
+          .then(blob => {
+              const plotImageUrl = URL.createObjectURL(blob);
+              const plotImageElement = document.createElement('img');
+              plotImageElement.src = plotImageUrl;
+              document.getElementById('plotImageContainer').innerHTML = '';
+              document.getElementById('plotImageContainer').appendChild(plotImageElement);
+          })
+          .catch(error => {
+              console.error('Error:', error);
+          });
   }
-
+  
   // Function to retrieve history from Firebase
   function retrieveHistory() {
-    var userId = "{{ current_user.username }}";
-
-  // Send a GET request to your Flask API to retrieve the user's history data
+      var userId = "{{ current_user.username }}";
   
-  fetch('/api/history/' + userId)
-            .then(response => response.json())
-            .then(historyData => {
-                // Display the history data in the table
-                var historyDataHtml = '';
-                historyData.forEach(data => {
-                console.log(data);
-
-                    // Customize this part to format and display your data as needed
-                    historyDataHtml += `
-                        <tr>
-                            <td>${data.sample1 || ''}</td>
-                            <td>${data.temp1 || ''}</td>
-                            <td>${data.time1 || ''}</td>
-                            <td>${data.pressure1 || ''}</td>
-                            <td>${data.area1 || ''}</td>
-                            <td>${data.comment1 || ''}</td>
-                            <td>${data.temp2 || ''}</td>
-                            <td>${data.time2 || ''}</td>
-                            <td>${data.comment2 || ''}</td>
-                        </tr>
-                    `;
-                });
-                document.getElementById('historyData').innerHTML = historyDataHtml;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+      // Send a GET request to your Flask API to retrieve the user's history data
+  
+      fetch('/api/history/' + userId)
+          .then(response => response.json())
+          .then(historyData => {
+              // Display the history data in the table
+              var historyDataHtml = '';
+              historyData.forEach(data => {
+                  console.log(data);
+  
+                  // Customize this part to format and display your data as needed
+                  historyDataHtml += `
+                          <tr>
+                              <td>${data.sample1 || ''}</td>
+                              <td>${data.temp1 || ''}</td>
+                              <td>${data.time1 || ''}</td>
+                              <td>${data.pressure1 || ''}</td>
+                              <td>${data.area1 || ''}</td>
+                              <td>${data.comment1 || ''}</td>
+                              <td>${data.temp2 || ''}</td>
+                              <td>${data.time2 || ''}</td>
+                              <td>${data.comment2 || ''}</td>
+                          </tr>
+                      `;
+              });
+              document.getElementById('historyData').innerHTML = historyDataHtml;
+          })
+          .catch(error => {
+              console.error('Error:', error);
+          });
   }
-
+  
   // Attach event listeners to the buttons
   document.querySelector(".submit-button").addEventListener("click", submitData);
-  document.querySelector("#historyButton").addEventListener("click", retrieveHistory);
-</script>
+  document.querySelector("#historyButton").addEventListener("click", retrieveHistory); 
+  </script>
 {% endblock %}
