@@ -110,7 +110,7 @@
                 <input type="text" class="form-control" name="sample1" />
               </td>
               <td><input type="text" class="form-control" name="temp1" /></td>
-              <td><input type="text" class="form-control" name="time1" /></td>
+              <td><input type="text" class="form-control" name="duration1" /></td>
               <td>
                 <input type="text" class="form-control" name="pressure1" />
               </td>
@@ -121,7 +121,7 @@
             </tr>
             <form>
               <td><input type="text" class="form-control" name="temp2" /></td>
-              <td><input type="text" class="form-control" name="time2" /></td>
+              <td><input type="text" class="form-control" name="duration2" /></td>
               <td></td>
               <td></td>
               <td>
@@ -225,14 +225,12 @@
     const formData = {
       sample1: form.sample1.value,
       temp1: form.temp1.value,
-      time1: form.time1.value,
-      duration1: form.time1.value,
+      duration1: form.duration1.value,
       pressure1: form.pressure1.value,
       area1: form.area1.value,
       comment1: form.comment1.value,
       temp2: form.temp2.value,
-      time2: form.time2.value,
-      duration2: form.time1.value,
+      duration2: form.duration2.value,
       comment2: form.comment2.value,
       time_submit: new Date().toISOString(),
 
@@ -261,7 +259,7 @@
     });
 
 
-    fetch(`/generate_plot?temperature1=${formData.toISOString}&temperature2=${formData.temp2}&duration1=${formData.duration1}&duration2=${formData.duration2}&pressure=${formData.pressure1}`)
+    fetch(`/generate_plot?temperature1=${formData.temp1}&temperature2=${formData.temp2}&duration1=${formData.duration1}&duration2=${formData.duration2}&pressure=${formData.pressure1}`)
                 .then(response => response.blob())
                 .then(blob => {
                     const plotImageUrl = URL.createObjectURL(blob);
