@@ -55,12 +55,6 @@
     width: 100%;
     white-space: normal;
   }
-
-  .custom-table td,
-  .custom-table th {
-    white-space: nowrap;
-  }
-
   .form-footer {
     margin-bottom: 10px;
     display: flex;
@@ -89,7 +83,7 @@
           </p>
           <p>- You can stop operation during the process.</p>
         </div>
-        <button class="btn btn-outline-success" id="#historyButton">
+        <button class="btn btn-outline-success" id="historyButton" data-toggle="modal" data-target="#exampleModalLong">
             HISTORY
         </button>
   </div>
@@ -101,7 +95,7 @@
           <thead>
             <tr>
               <th>Sample (No.)</th>
-              <th>Temperature (℃)</th>
+              <th>Temp (℃)</th>
               <th>Duration (mins)</th>
               <th>Pressure (MPa)</th>
               <th>Area (cm²)</th>
@@ -111,6 +105,7 @@
           <tbody>
             <tr>
               <form id="sinteringForm">
+                <input name="username" type="hidden" value="{{ current_user.username }}"/>
               <td rowspan="2">
                 <input type="text" class="form-control" name="sample1" />
               </td>
@@ -157,7 +152,7 @@
            <thead >
               <tr>
                 <th>Force</th>
-                <th>Temperature (°C)</th>
+                <th>Temp(°C)</th>
                 <th>Period</th>
                 <th>Time left</th>
               </tr>
@@ -177,11 +172,46 @@
       </div>
     </div>
   </div>
+  <div class="modal fade " id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="text-body border w-100 table">
+            <thead>
+                <tr>
+                    <th>Sample 1</th>
+                    <th>Temp 1</th>
+                    <th>Time 1</th>
+                    <th>Pressure 1</th>
+                    <th>Area 1</th>
+                    <th>Comment 1</th>
+                    <th>Temp 2</th>
+                    <th>Time 2</th>
+                    <th>Comment 2</th>
+                </tr>
+            </thead>
+            <tbody id="historyData">
+            </tbody>
+        </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <!-- <script type="module" src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app-compat.js"></script>
 <script type="module" src="https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore-compat.js"></script>
 <link href="{{ url_for('static', filename='javascript/firebase-config.js') }}" rel="stylesheet"> -->
 <script type="module">
+
 
   // Initialize Firebase
   // Function to submit data to Firebase
@@ -189,15 +219,25 @@
     var form = document.getElementById("sinteringForm");
 
     // Create a data object from the form inputs
-    var data = {
-      sample: form.sample1.value,
-      temperature: form.temp1.value,
+    const formData = {
+      sample1: form.sample1.value,
+      temp1: form.temp1.value,
+      time1: form.time1.value,
       duration: form.time1.value,
-      pressure: form.pressure1.value,
-      area: form.area1.value,
-      comment: form.comment1.value,
+      pressure1: form.pressure1.value,
+      area1: form.area1.value,
+      comment1: form.comment1.value,
+      temp2: form.temp2.value,
+      time2: form.time2.value,
+      comment2: form.comment2.value,
+      time_submit: new Date().toISOString(),
+
     };
-    console.log(data,"ok")
+    const data = {
+      data: formData,
+      user_id: form.username.value,
+      time_submit: new Date().toISOString(),
+    }
     // Get a reference to the Firebase Realtime Database
     fetch('/api/sinteringForm', {
     method: 'POST',
@@ -222,14 +262,38 @@
 
   // Function to retrieve history from Firebase
   function retrieveHistory() {
-    var userId = 'user_id'; // Replace with the actual user's ID
-    var historyRef = app.database().ref('users/' + userId + '/history');
+    var userId = "{{ current_user.username }}";
 
-    historyRef.on('value', function (snapshot) {
-      // Handle the retrieved data here
-      var historyData = snapshot.val();
-      console.log(historyData); // You can display or process the data as needed
-    });
+  // Send a GET request to your Flask API to retrieve the user's history data
+  
+  fetch('/api/history/' + userId)
+            .then(response => response.json())
+            .then(historyData => {
+                // Display the history data in the table
+                var historyDataHtml = '';
+                historyData.forEach(data => {
+                console.log(data);
+
+                    // Customize this part to format and display your data as needed
+                    historyDataHtml += `
+                        <tr>
+                            <td>${data.sample1 || ''}</td>
+                            <td>${data.temp1 || ''}</td>
+                            <td>${data.time1 || ''}</td>
+                            <td>${data.pressure1 || ''}</td>
+                            <td>${data.area1 || ''}</td>
+                            <td>${data.comment1 || ''}</td>
+                            <td>${data.temp2 || ''}</td>
+                            <td>${data.time2 || ''}</td>
+                            <td>${data.comment2 || ''}</td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('historyData').innerHTML = historyDataHtml;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
   }
 
   // Attach event listeners to the buttons

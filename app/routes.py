@@ -125,10 +125,33 @@ def submit():
     data = request.json  # Assumes data is sent in JSON format
     user_id = data.get('user_id')  # You may want to identify the user
     history_data = data.get('data')  # Data to be stored in Firebase
+    time_submit = data.get('time_submit')
 
-
-    print("history",data)
     history_ref = firebaseDb.collection('history')
-    new_history_doc = history_ref.add(data)
+
+    # Create a new collection named after the user's ID if it doesn't exist
+    user_collection = history_ref.document(user_id)  # Use user_id as the document name 
+    user_collection.set({})  # Create an empty document if it doesn't exist
+
+    new_record = user_collection.collection(time_submit).document()
+    new_record.set(history_data, merge=True) 
+
 
     return jsonify({"message": "Data submitted successfully"})
+
+@app.route('/api/history/<user_id>', methods=['GET'])
+def get_user_data(user_id):
+    # Ensure user_id is not empty or invalid
+    if not user_id:
+        return jsonify({"error": "Invalid user_id"}), 400
+
+
+    history_ref = firebaseDb.collection('history').document(user_id)
+    collections = history_ref.collections()
+    documents_list = []
+    
+    for collection_ref in collections:
+        for doc_ref in collection_ref.list_documents():
+            documents_list.append(doc_ref.get().to_dict())
+    
+    return jsonify(documents_list)
