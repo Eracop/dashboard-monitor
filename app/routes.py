@@ -16,7 +16,94 @@ from flask import Flask, request, jsonify
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+import numpy as np
+from matplotlib import pyplot as plt
 import os
+from io import BytesIO
+import base64
+from flask import send_file
+
+
+def generate_plot(temperature1, temperature2, duration1, duration2, pressure):
+    # Define the limit of parameters
+    maxtemperature = 400  # (degree Celsius)
+    maxtime = 150  # (minutes)
+    maxpressure = 5  # (MPa)
+
+    # Calculate durationtemp
+    durationtemp = duration1 * (temperature1 / temperature2)
+
+    # Create time for temperature
+    time12 = np.linspace(0, duration2, 1000)
+    time3 = np.linspace(duration2, 130, 1000)
+
+    # Create time for pressure
+    ptime = np.linspace(0, maxtime, 1000)
+
+    # Create temperature function
+    temperature12_func = np.piecewise(time12, [time12 < duration1, (time12 >= duration1) & (time12 <= duration2)],
+                                      [lambda t: temperature2 / duration1 * t, temperature2])
+    temperature3_func = np.piecewise(time3, [time3 >= duration2], [lambda t: -temperature2 / (maxtime - duration2) * (t - duration2) + temperature2])
+
+    # Create pressure function
+    pressure_func = np.piecewise(ptime, [ptime < durationtemp, (ptime >= durationtemp) & (ptime <= duration2),
+                                        (ptime >= duration2) & (ptime <= maxtime)],
+                                [0, pressure, 0])
+
+    # Initialize a matplotlib "figure"
+    fig, ax1 = plt.subplots()
+    ax1.set_facecolor("black")
+
+    # Set labels for axes and plot temperature
+    color = 'white'
+    ax1.set_xlabel('Time (minutes)')
+    ax1.set_xlim(0, maxtime)
+    ax1.set_ylabel('Temperature (°C)', color="black")
+    ax1.set_ylim(0, maxtemperature)
+
+    # Plot temperature
+    ax1.plot(time12, temperature12_func, color=color)
+    ax1.plot(time3, temperature3_func, color=color, linestyle='dashed')
+    ax1.tick_params(axis='y', labelcolor="black")
+
+    # Highlight specific points for temperature
+    ax1.plot([duration1, duration1], [0, temperature2], color=color, linestyle='dashed')
+    ax1.plot([duration2, duration2], [0, temperature2], color=color, linestyle='dashed')
+    ax1.plot([0, duration1], [temperature2, temperature2], color=color, linestyle='dashed')
+    ax1.plot([0, durationtemp], [temperature1, temperature1], color=color, linestyle='dashed')
+
+    # Add text labels at specific points in temperature
+    ax1.text(duration1, 0, f'{duration1}', ha='left', va='bottom', color=color)
+    ax1.text(duration2, 0, f'{duration2}', ha='left', va='bottom', color=color)
+    ax1.text(0, temperature2, f'{temperature2}', ha='left', va='bottom', color=color)
+    ax1.text(0, temperature1, f'{temperature1}', ha='left', va='bottom', color=color)
+
+    # Create a new set of axes for pressure
+    ax2 = ax1.twinx()
+    color = 'tab:red'
+    ax2.set_ylabel('Pressure (MPa)', color=color)
+    ax2.set_ylim(0, maxpressure)
+    ax2.tick_params(axis='y', labelcolor=color)
+    ax2.plot(ptime, pressure_func, color=color)
+    fig.tight_layout()
+
+    # Highlight specific points for pressure
+    ax2.plot([duration2, maxtime], [pressure, pressure], color=color, linestyle='dashed')
+
+    # Add text labels at specific points in pressure
+    ax2.text(maxtime, pressure, f'{pressure}', ha='right', va='bottom', color=color)
+
+    # Save the plot to a BytesIO object
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    plt.close(fig)
+
+    # Convert the plot to a base64 encoded image
+    plot_image = base64.b64encode(buffer.read()).decode()
+    return plot_image
+
+
 currentuser = None
 if not firebase_admin._apps:
     current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -155,3 +242,18 @@ def get_user_data(user_id):
             documents_list.append(doc_ref.get().to_dict())
     
     return jsonify(documents_list)
+
+@app.route('/generate_plot', methods=['GET'])
+def generate_plot_api():
+    # Get input parameters from the query string
+    temperature1 = float(request.args.get('temperature1', 225))
+    temperature2 = float(request.args.get('temperature2', 285))
+    duration1 = float(request.args.get('duration1', 30))
+    duration2 = float(request.args.get('duration2', 90))
+    pressure = float(request.args.get('pressure', 1.5))
+
+    # Generate the plot
+    plot_image = generate_plot(temperature1, temperature2, duration1, duration2, pressure)
+
+    # Return the plot image as a response
+    return send_file(BytesIO(base64.b64decode(plot_image)), mimetype='image/png')

@@ -136,6 +136,9 @@
         </div>
       </div>
     </div>
+
+    <div id="plotImageContainer" class="d-flex justify-content-center">
+      </div>
   </div>
 
   <div class="column border-white border">
@@ -258,6 +261,24 @@
 
     // Optionally, you can clear the form fields here
     form.reset();
+    // const temperature1 = document.getElementById('temperature1').value;
+    // const temperature2 = document.getElementById('temperature2').value;
+    // const duration1 = document.getElementById('duration1').value;
+    // const duration2 = document.getElementById('duration2').value;
+    // const pressure = document.getElementById('pressure').value;
+
+    fetch(`/generate_plot?temperature1=${1}&temperature2=${1}&duration1=${1}&duration2=${1}&pressure=${1}`)
+                .then(response => response.blob())
+                .then(blob => {
+                    const plotImageUrl = URL.createObjectURL(blob);
+                    const plotImageElement = document.createElement('img');
+                    plotImageElement.src = plotImageUrl;
+                    document.getElementById('plotImageContainer').innerHTML = '';
+                    document.getElementById('plotImageContainer').appendChild(plotImageElement);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
   }
 
   // Function to retrieve history from Firebase

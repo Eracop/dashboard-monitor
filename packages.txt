@@ -8,3 +8,5 @@ Werkzeug~=2.0.0
 Flask-WTF==0.15.0 
 email-validator==1.1.3 
 firebase_admin==6.2.0
+numpy
+matplotlib
