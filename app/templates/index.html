@@ -314,21 +314,22 @@
               var historyDataHtml = '';
               historyData.forEach(data => {
                   console.log(data);
-  
-                  // Customize this part to format and display your data as needed
-                  historyDataHtml += `
+                  if(data) {
+                    historyDataHtml += `
                           <tr>
                               <td>${data.sample1 || ''}</td>
                               <td>${data.temp1 || ''}</td>
-                              <td>${data.time1 || ''}</td>
+                              <td>${data.duration1 || ''}</td>
                               <td>${data.pressure1 || ''}</td>
                               <td>${data.area1 || ''}</td>
                               <td>${data.comment1 || ''}</td>
                               <td>${data.temp2 || ''}</td>
-                              <td>${data.time2 || ''}</td>
+                              <td>${data.duration2 || ''}</td>
                               <td>${data.comment2 || ''}</td>
                           </tr>
                       `;
+                  }
+               
               });
               document.getElementById('historyData').innerHTML = historyDataHtml;
           })
