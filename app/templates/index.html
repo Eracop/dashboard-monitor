@@ -171,10 +171,16 @@
             </tbody>
           </table>
       </div>
+      
     </div>
-    <div id="realtimePlotContainer" class="column border-white border">
-      <!-- Placeholder for realtime-plot image -->
+    <div>
+      <h4 id="forceValue"></h4>
+      <h4 id="tempValue"></h4>
+      <div id="realtimePlotContainer" class="border-white border d-flex justify-content-center">
+        <!-- Placeholder for realtime-plot image -->
+      </div>
     </div>
+  
   </div>
 
   <div class="modal fade " id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
@@ -249,7 +255,7 @@
   }
 
   // Call the fetchData function every 1 minute (60,000 milliseconds)
-  setInterval(fetchRealTimeParam, 3600000);
+  setInterval(fetchRealTimeParam, 120000);
   fetchRealTimeParam();
   // Initial data fetch
   // Initialize Firebase
@@ -321,7 +327,7 @@
               var historyDataHtml = '';
               historyData.forEach(data => {
                   console.log(data);
-                  if(data) {
+                  if(data != null) {
                     historyDataHtml += `
                           <tr>
                               <td>${data.sample1 || ''}</td>
@@ -357,8 +363,8 @@
             .then(data => {
                 console.log('Received data from real-time-plot:', data);
                 // Cập nhật giao diện người dùng với dữ liệu mới
-                document.getElementById('forceValue').innerText = `Force: ${data.force}`;
-                document.getElementById('tempValue').innerText = `Temperature: ${data.temp}`;
+                document.getElementById('forceValue').innerHTML = `Force: ${data.force}`;
+                document.getElementById('tempValue').innerHTML = `Temperature: ${data.temp}`;
 
                 // Hiển thị đồ thị thời gian thực trên trang (ví dụ: trong một thẻ img)
                 const plotImageElement = document.createElement('img');
@@ -372,7 +378,7 @@
     }
 
     // Gọi hàm cập nhật mỗi khoảng thời gian nhất định (ví dụ: mỗi 5 phút)
-    setInterval(updateRealtimePlot, 300000);
+    setInterval(updateRealtimePlot, 120000);
 
     // Gọi hàm cập nhật lần đầu
     updateRealtimePlot();
