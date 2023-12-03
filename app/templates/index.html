@@ -308,6 +308,8 @@
               plotImageElement.src = plotImageUrl;
               document.getElementById('plotImageContainer').innerHTML = '';
               document.getElementById('plotImageContainer').appendChild(plotImageElement);
+              updateRealtimePlot();
+
           })
           .catch(error => {
               console.error('Error:', error);
